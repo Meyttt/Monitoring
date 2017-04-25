@@ -27,21 +27,17 @@ public class Walker {
         WebDriver driver= new ChromeDriver();
         driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
         this.driver=driver;
-        this.wait= new WebDriverWait(driver,20);
+        this.wait= new WebDriverWait(driver,30);
     }
 
     public void walk() throws IOException {
         initDriver();
         driver.get(config.get("urlMain"));
-        try {
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Результаты мониторинга аккредитованных удостоверяющих центров в части доступности списков аннулированных сертификатов")));
-        }catch (TimeoutException e){
-            if(driver.findElements(By.linkText("ВХОД В СИСТЕМУ")).size()>0){
-                driver.findElement(By.xpath("//*[@id=\"Login\"]")).sendKeys(config.get("login"));
-                driver.findElement(By.xpath("//*[@id=\"Password\"]")).sendKeys(config.get("password"));
-                driver.findElement(By.xpath("/html/body/div/div[3]/div/form/fieldset/table/tbody/tr[3]/td/input")).submit();
-            }
-        }
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("ВХОД В СИСТЕМУ")));
+        driver.findElement(By.xpath("//*[@id=\"Login\"]")).sendKeys(config.get("login"));
+        driver.findElement(By.xpath("//*[@id=\"Password\"]")).sendKeys(config.get("password"));
+        driver.findElement(By.xpath("/html/body/div/div[3]/div/form/fieldset/table/tbody/tr[3]/td/input")).submit();
         currentUrl=config.get("service");
         driver.get(currentUrl);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/div/div[3]/div[1]")));
@@ -63,9 +59,9 @@ public class Walker {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/div/div[3]/div[1]")));
         Assert.assertTrue(driver.findElement(By.xpath("/html/body/div/div[3]/div[1]")).getText().contains("Перечень параметров подсистемы"));
     }
-    public void closeDriver(){
+    public void closeDriver() throws InterruptedException {
         if(driver!=null){
-            driver.close();
+            Thread.sleep(3000);
             driver.quit();
         }
     }
